@@ -13,18 +13,33 @@ def build_course(topic: str):
         Coursely().crew().kickoff(inputs=inputs)
         # Read the output file
         with open('course_output.md', 'r', encoding='utf-8') as f:
-            return f.read()
+            content = f.read()
+        # Split the content into sections for outline, lessons, quizzes
+        # This assumes the markdown file uses headings like ## Outline, ## Lessons, ## Quizzes
+        import re
+        sections = re.split(r'^## +', content, flags=re.MULTILINE)
+        outline = lessons = quizzes = ''
+        for section in sections:
+            if section.lower().startswith('outline'):
+                outline = '## ' + section.strip()
+            elif section.lower().startswith('lessons'):
+                lessons = '## ' + section.strip()
+            elif section.lower().startswith('quizzes'):
+                quizzes = '## ' + section.strip()
+        return outline, lessons, quizzes
     except Exception as e:
-        return f"Error: {e}"
+        return f"Error: {e}", '', ''
 
 def gradio_ui():
     import gradio as gr
     with gr.Blocks() as demo:
         gr.Markdown("# Online Course Builder\nEnter a topic to generate a full course outline, lessons, and quizzes!")
         topic = gr.Textbox(label="Course Topic", placeholder="e.g. Introduction to Machine Learning")
-        output = gr.Markdown(label="Course Output")
+        outline_md = gr.Markdown(label="Course Outline")
+        lessons_md = gr.Markdown(label="Lessons")
+        quizzes_md = gr.Markdown(label="Quizzes")
         btn = gr.Button("Build Course")
-        btn.click(fn=build_course, inputs=topic, outputs=output)
+        btn.click(fn=build_course, inputs=topic, outputs=[outline_md, lessons_md, quizzes_md])
     demo.launch()
 
 import sys
