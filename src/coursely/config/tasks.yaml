@@ -1,0 +1,20 @@
+curriculum_task:
+  description: >
+    Design a comprehensive course outline for {topic}, including all major sections and logical progression for effective learning.
+  expected_output: >
+    A structured course outline with at least 5 main sections and subtopics, formatted as markdown bullet points.
+  agent: curriculum_designer
+
+lesson_task:
+  description: >
+    For each section in the course outline, create a detailed lesson plan with explanations, examples, and learning objectives.
+  expected_output: >
+    A set of lesson plans, one for each section, each with objectives, explanations, and examples, formatted as markdown.
+  agent: lesson_planner
+
+quiz_task:
+  description: >
+    For each lesson, generate a quiz with at least 5 questions (multiple choice or short answer) to assess understanding.
+  expected_output: >
+    A set of quizzes, one per lesson, each with at least 5 questions and answers, formatted as markdown.
+  agent: quiz_generator
