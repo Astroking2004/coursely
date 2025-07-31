@@ -43,7 +43,7 @@ def build_course(topic: str):
 def gradio_ui():
     import gradio as gr
     with gr.Blocks() as demo:
-        gr.Markdown("# Online Course Builder\nEnter a topic to generate a full course outline, lessons, and quizzes!")
+        gr.Markdown("# Coursely(An Online Course Builder)\nEnter a topic to generate a full course outline, lessons, and quizzes!")
         topic = gr.Textbox(label="Course Topic", placeholder="e.g. Introduction to Machine Learning")
         output_md = gr.Markdown(label="Course Output")
         btn = gr.Button("Build Course")
