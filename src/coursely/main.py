@@ -9,37 +9,45 @@ def build_course(topic: str):
         'current_year': str(datetime.now().year)
     }
     try:
-        # Run the crew and capture output file
+        # Run the crew and capture output files
         Coursely().crew().kickoff(inputs=inputs)
-        # Read the output file
-        with open('course_output.md', 'r', encoding='utf-8') as f:
-            content = f.read()
-        # Split the content into sections for outline, lessons, quizzes
-        # This assumes the markdown file uses headings like ## Outline, ## Lessons, ## Quizzes
+        # Read all three markdown files
+        curriculum = ''
+        lessons = ''
+        quizzes = ''
+        try:
+            with open('course_output1.md', 'r', encoding='utf-8') as f:
+                curriculum = f.read().strip()
+        except Exception:
+            pass
+        try:
+            with open('course_output2.md', 'r', encoding='utf-8') as f:
+                lessons = f.read().strip()
+        except Exception:
+            pass
+        try:
+            with open('course_output.md', 'r', encoding='utf-8') as f:
+                quizzes = f.read().strip()
+        except Exception:
+            pass
+        # Join in order: curriculum -> lessons -> quizzes
+        final_markdown = '\n\n---\n\n'.join([section for section in [curriculum, lessons, quizzes] if section])
+        # Remove code block markdown (triple backticks and language specifiers)
         import re
-        sections = re.split(r'^## +', content, flags=re.MULTILINE)
-        outline = lessons = quizzes = ''
-        for section in sections:
-            if section.lower().startswith('outline'):
-                outline = '## ' + section.strip()
-            elif section.lower().startswith('lessons'):
-                lessons = '## ' + section.strip()
-            elif section.lower().startswith('quizzes'):
-                quizzes = '## ' + section.strip()
-        return outline, lessons, quizzes
+        final_markdown = re.sub(r'```[a-zA-Z]*\n?', '', final_markdown)
+        final_markdown = final_markdown.replace('```', '')
+        return final_markdown
     except Exception as e:
-        return f"Error: {e}", '', ''
+        return f"Error: {e}"
 
 def gradio_ui():
     import gradio as gr
     with gr.Blocks() as demo:
         gr.Markdown("# Online Course Builder\nEnter a topic to generate a full course outline, lessons, and quizzes!")
         topic = gr.Textbox(label="Course Topic", placeholder="e.g. Introduction to Machine Learning")
-        outline_md = gr.Markdown(label="Course Outline")
-        lessons_md = gr.Markdown(label="Lessons")
-        quizzes_md = gr.Markdown(label="Quizzes")
+        output_md = gr.Markdown(label="Course Output")
         btn = gr.Button("Build Course")
-        btn.click(fn=build_course, inputs=topic, outputs=[outline_md, lessons_md, quizzes_md])
+        btn.click(fn=build_course, inputs=topic, outputs=output_md)
     demo.launch()
 
 import sys
